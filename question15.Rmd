@@ -1,0 +1,52 @@
+---
+title: "Question 15"
+author: "Wanying Tian"
+date: "7/16/2022"
+output: pdf_document
+---
+
+Wanying Tian
+A91028356
+
+```{r}
+#read the CSV file and check how it is look like
+covid<-read.csv("covid19_variants.csv")
+head(covid)
+```
+```{r}
+#remove the "total" and "other" rows
+library(dplyr)
+nototal<-covid %>%
+  filter(!variant_name=='Total'& !variant_name=='Other')
+head(nototal)
+```
+
+```{r}
+#to create the x axis label as month and year instead of date
+library(lubridate)
+date_list<-unique(nototal$date)
+Yr <- format(as.Date(date_list), "%Y")
+Month <- month(as.Date(date_list), label = TRUE, abbr = TRUE)
+Month_Yr <- paste(Month, Yr, sep= " ")
+Month_Yr[duplicated(Month_Yr)] <- ""
+```
+
+
+
+```{r}
+library(ggplot2)
+ggplot(nototal,aes(date,percentage,group=variant_name,color=variant_name ))+
+       geom_line()+
+     labs(x = "", y = "Percentage of Sequenced Specimens", 
+              title = "Covid19 Variants in California")+
+   scale_x_discrete(labels= Month_Yr)+
+   theme(
+   axis.text.x = element_blank(),
+   axis.ticks.x = element_blank()
+   )+
+  theme(axis.text.x = element_text( size=10, angle=45))+
+   annotate('text', x = 100, y = 100, size=2.5,label = 'Data Source:<https://www.cdphca.gov/>')
+```
+
+
+
